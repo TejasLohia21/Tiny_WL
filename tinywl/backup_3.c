@@ -24,7 +24,7 @@
 #include <wlr/types/wlr_xdg_shell.h>
 #include <wlr/util/log.h>
 #include <xkbcommon/xkbcommon.h>
-#include <wlr/util/box.h> //this function has been added to obtain the information about window box
+#include <wlr/util/box.h>
 
 /* For brevity's sake, struct members are annotated where they are used. */
 enum tinywl_cursor_mode {
@@ -808,6 +808,10 @@ static void xdg_toplevel_map(struct wl_listener *listener, void *data) {
         num_windows++;
     }
 
+	printf("%d\n", num_windows);
+	printf("%s\n", "THE OUTPUT: ");
+
+
     // Determine window position based on count
     if (num_windows % 2 == 1) {
         // For odd number (1st, 3rd, etc.), place on the left
@@ -1151,10 +1155,7 @@ static void server_new_xdg_popup(struct wl_listener *listener, void *data) {
 
 int main(int argc, char *argv[]) {
 	wlr_log_init(WLR_DEBUG, NULL);
-
-	//following code is edited - Change 13th jan
-	printf("output of this is: %d\n", argc);
-	char *startup_cmds[argc]; 
+	char *startup_cmds[argc]; // Array to hold multiple startup commands
     int startup_cmd_count = 0;
 
     int c;
@@ -1329,13 +1330,6 @@ int main(int argc, char *argv[]) {
 	// 		execl("/bin/sh", "/bin/sh", "-c", startup_cmd, (void *)NULL);
 	// 	}
 	// }
-
-
-
-
-
-
-	//following code added - 13th jan
 	for (int i = 0; i < startup_cmd_count; i++) {
         if (fork() == 0) {
             execl("/bin/sh", "/bin/sh", "-c", startup_cmds[i], (void *)NULL);
@@ -1562,3 +1556,6 @@ int main(int argc, char *argv[]) {
 // 	wl_display_destroy(server.wl_display);
 // 	return 0;
 // }
+
+
+//this is the final code which shud split the screen

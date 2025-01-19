@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "wlr_input_device.h": "c",
+        "wlr_pointer.h": "c",
+        "wlr_subcompositor.h": "c",
+        "wlr_xcursor_manager.h": "c",
+        "log.h": "c",
+        "wlr_scene.h": "c"
+    }
+}

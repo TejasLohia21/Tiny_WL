@@ -1,0 +1,757 @@
+    1  sudo apt update
+    2  sudo apt upgrade
+    3  sudo apt install ubuntu-desktop
+    4  reboot
+    5  cd ~/D
+    6  cd Downloads/
+    7  ;s
+    8  ls
+    9  sudo dpkg -i google-chrome-stable_current_amd64.deb 
+   10  sudo apt --fix-broken install
+   11  sudo apt install ./google-chrome-stable_current_amd64.deb 
+   12  cd D
+   13  cd Downloads/
+   14  sudo dpkg -i google-chrome-stable_current_amd64.deb
+   15  clear
+   16  sudo apt update
+   17  sudo apt install chromium-browser
+   18  chromium-browser
+   19  $ sudo apt install software-properties-common apt-transport-https
+   20  sudo apt install wget gpg
+   21  wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
+   22  tejas212
+   23  sudo install -o root -g root -m 644 packages.microsoft.gpg /usr/share/keyrings/
+   24  echo "deb [arch=amd64 signed-by=/usr/share/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" | sudo tee /etc/apt/sources.list.d/vscode.list
+   25  sudo apt update
+   26  sudo apt install code
+   27  wget https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-arm64 -O code_arm64.deb
+   28  sudo dpkg -i code_arm64.deb
+   29  sudo apt-get install libwayland-dev libwayland-client-dev libwayland-server-dev
+   30  sudo apt-get install libwayland-dev
+   31  clear
+   32  cd Desktop
+   33  ls
+   34  cd tinywl
+   35  wayland-scanner client-header /usr/share/wayland-protocols/stable/xdg-shell/xdg-shell.xml xdg-shell-protocol.h
+   36  find /usr/share/wayland-protocols -name "xdg-shell.xml"
+   37  sudo apt install libwlroots-dev
+   38  sudo apt install wayland-protocols
+   39  find /usr/share/wayland-protocols -name "xdg-shell.xml"
+   40  wayland-scanner client-header /usr/share/wayland-protocols/stable/xdg-shell/xdg-shell.xml xdg-shell-protocol.h
+   41  sudo apt install libpixman-1-dev
+   42  pkg-config --modversion wlroots
+   43  sudo apt-get update
+   44  sudo apt-get install libpixman-1-dev
+   45  /usr/bin/gcc -fdiagnostics-color=always -g -DWLR_USE_UNSTABLE /home/tejas/Desktop/tinywl/tinywl.c -o /home/tejas/Desktop/tinywl/tinywl
+   46  find / -name pixman.h 2>/dev/null
+   47  gcc -fdiagnostics-color=always -g -DWLR_USE_UNSTABLE `pkg-config --cflags wlr pixman` /home/tejas/Desktop/tinywl/tinywl.c -o /home/tejas/Desktop/tinywl/tinywl
+   48  gcc -fdiagnostics-color=always -g -DWLR_USE_UNSTABLE -I/usr/include/pixman-1 -I/usr/include/wlr  /home/tejas/Desktop/tinywl/tinywl.c -o /home/tejas/Desktop/tinywl/tinywl 
+   49  make
+   50  cd ~/Desktop/wlroots-master/build
+   51  ls wlroots-0.19.pc
+   52  meson build
+   53  ninja -C build
+   54  cd ~/Desktop/wlroots-master/build
+   55  ls wlroots-0.19.pc
+   56  cd ~/Desktop/wlroots-master
+   57  rm -rf build
+   58  meson setup build
+   59  git clone https://gitlab.freedesktop.org/wayland/wayland.git
+   60  cd wayland
+   61  meson setup build
+   62  ninja -C build
+   63  sudo ninja -C build install
+   64  cd ~/Desktop/wlroots-master
+   65  meson setup build
+   66  git clone https://gitlab.freedesktop.org/wayland/wayland.git
+   67  cd wayland
+   68  cd ~/Desktop/tinywl
+   69  export PKG_CONFIG_PATH=~/Desktop/wlroots-master/build:$PKG_CONFIG_PATH
+   70  make
+   71  cd ~/Desktop/wlroots-master
+   72  meson build
+   73  ninja -C build
+   74  sudo apt update
+   75  sudo apt install meson ninja-build
+   76  cd ~/Desktop/wlroots-master
+   77  meson build
+   78  ninja -C build
+   79  cd Desktop
+   80  sudo apt update
+   81  sudo apt install libwlroots-dev wayland-protocols
+   82  git clone https://gitlab.freedesktop.org/wlroots/wlroots.git
+   83  cd wlroots
+   84  meson build
+   85  ninja -C build
+   86  sudo ninja -C build install
+   87  git clone https://gitlab.freedesktop.org/wlroots/wlroots.git tinywl
+   88  cd tinywl
+   89  sudo add-apt-repository ppa:oibaf/graphics-drivers
+   90  sudo apt update
+   91  sudo apt upgrade wayland-protocols libwayland-dev
+   92  git clone https://gitlab.freedesktop.org/wlroots/wlroots.git tinywl
+   93  cd tinywl
+   94  meson build
+   95  ninja -C build
+   96  sudo add-apt-repository ppa:oibaf/graphics-drivers
+   97  sudo apt update
+   98  sudo apt upgrade wayland-protocols libwayland-dev
+   99  sudo apt update
+  100  sudo apt install libwayland-dev wayland-protocols
+  101  [200~pkg-config --modversion wayland-server
+  102  pkg-config --modversion wayland-server
+  103  sudo apt install build-essential meson ninja-build pkg-config libffi-dev libdrm-dev
+  104  git clone https://gitlab.freedesktop.org/wayland/wayland.git
+  105  cd wayland
+  106  git checkout 1.23.1
+  107  meson build
+  108  ninja -C build
+  109  sudo ninja -C build install
+  110  sudo apt install libexpat1-dev
+  111  meson build
+  112  ninja -C build
+  113  sudo ninja -C build install
+  114  sudo apt install libxml2-dev
+  115  meson build
+  116  ninja -C build
+  117  sudo ninja -C build install
+  118  sudo apt install graphviz
+  119  meson setup build
+  120  ninja -C build
+  121  sudo ninja -C build install
+  122  sudo apt install doxygen
+  123  rm -rf build
+  124  meson setup build
+  125  sudo apt install xsltproc
+  126  rm -rf build
+  127  meson setup build
+  128  sudo apt install xmlto
+  129  cd Desktop
+  130  sudo apt update
+  131  sudo apt install libwlroots-dev wayland-protocols
+  132  git clone https://github.com/swaywm/wlroots.git
+  133  cd wlroots/tinywl
+  134  make
+  135  /usr/bin/wayland-scanner server-header 	//usr/share/wayland-protocols/stable/xdg-shell/xdg-shell.xml xdg-shell-protocol.h
+  136  /usr/bin/wayland-scanner private-code 	//usr/share/wayland-protocols/stable/xdg-shell/xdg-shell.xml xdg-shell-protocol.c
+  137  cc  	-g -Werror -I. 	-DWLR_USE_UNSTABLE 	-o tinywl tinywl.c 	-I/usr/include/libdrm -I/usr/include/pixman-1 -lwlroots  -lwayland-server  -lxkbcommon 
+  138  tinywl.c: In function ‘focus_view’:
+  139  tinywl.c:113:52: error: implicit declaration of function ‘wlr_xdg_surface_from_wlr_surface’; did you mean ‘wlr_xdg_surface_try_from_wlr_surface’? [-Werror=implicit-function-declaration]
+  140  tinywl.c:113:52: error: initialization of ‘struct wlr_xdg_surface *’ from ‘int’ makes pointer from integer without a cast [-Werror=int-conversion]
+  141  tinywl.c:115:48: error: passing argument 1 of ‘wlr_xdg_toplevel_set_activated’ from incompatible pointer type [-Werror=incompatible-pointer-types]
+  142  In file included from tinywl.c:22:
+  143  /usr/include/wlr/types/wlr_xdg_shell.h:355:66: note: expected ‘struct wlr_xdg_toplevel *’ but argument is of type ‘struct wlr_xdg_surface *’
+  144  tinywl.c:122:44: error: passing argument 1 of ‘wlr_xdg_toplevel_set_activated’ from incompatible pointer type [-Werror=incompatible-pointer-types]
+  145  /usr/include/wlr/types/wlr_xdg_shell.h:355:66: note: expected ‘struct wlr_xdg_toplevel *’ but argument is of type ‘struct wlr_xdg_surface *’
+  146  tinywl.c: In function ‘keyboard_handle_modifiers’:
+  147  tinywl.c:144:63: error: passing argument 2 of ‘wlr_seat_set_keyboard’ from incompatible pointer type [-Werror=incompatible-pointer-types]
+  148  In file included from /usr/include/wlr/types/wlr_data_device.h:13,
+  149  /usr/include/wlr/types/wlr_seat.h:491:72: note: expected ‘struct wlr_keyboard *’ but argument is of type ‘struct wlr_input_device *’
+  150  tinywl.c:147:34: error: ‘struct wlr_input_device’ has no member named ‘keyboard’
+  151  tinywl.c: In function ‘keyboard_handle_key’:
+  152  tinywl.c:192:33: error: invalid use of undefined type ‘struct wlr_event_keyboard_key’
+  153  tinywl.c:196:41: error: ‘struct wlr_input_device’ has no member named ‘keyboard’
+  154  tinywl.c:199:73: error: ‘struct wlr_input_device’ has no member named ‘keyboard’
+  155  tinywl.c:200:52: error: invalid use of undefined type ‘struct wlr_event_keyboard_key’
+  156  tinywl.c:210:53: error: passing argument 2 of ‘wlr_seat_set_keyboard’ from incompatible pointer type [-Werror=incompatible-pointer-types]
+  157  /usr/include/wlr/types/wlr_seat.h:491:72: note: expected ‘struct wlr_keyboard *’ but argument is of type ‘struct wlr_input_device *’
+  158  tinywl.c:211:57: error: invalid use of undefined type ‘struct wlr_event_keyboard_key’
+  159  tinywl.c:212:30: error: invalid use of undefined type ‘struct wlr_event_keyboard_key’
+  160  tinywl.c:212:46: error: invalid use of undefined type ‘struct wlr_event_keyboard_key’
+  161  tinywl.c: In function ‘server_new_keyboard’:
+  162  tinywl.c:229:39: error: ‘struct wlr_input_device’ has no member named ‘keyboard’
+  163  tinywl.c:232:44: error: ‘struct wlr_input_device’ has no member named ‘keyboard’
+  164  tinywl.c:236:30: error: ‘struct wlr_input_device’ has no member named ‘keyboard’
+  165  tinywl.c:238:30: error: ‘struct wlr_input_device’ has no member named ‘keyboard’
+  166  tinywl.c:240:45: error: passing argument 2 of ‘wlr_seat_set_keyboard’ from incompatible pointer type [-Werror=incompatible-pointer-types]
+  167  /usr/include/wlr/types/wlr_seat.h:491:72: note: expected ‘struct wlr_keyboard *’ but argument is of type ‘struct wlr_input_device *’
+  168  tinywl.c: In function ‘process_cursor_resize’:
+  169  tinywl.c:408:39: error: passing argument 1 of ‘wlr_xdg_toplevel_set_size’ from incompatible pointer type [-Werror=incompatible-pointer-types]
+  170  /usr/include/wlr/types/wlr_xdg_shell.h:348:61: note: expected ‘struct wlr_xdg_toplevel *’ but argument is of type ‘struct wlr_xdg_surface *’
+  171  tinywl.c: In function ‘process_cursor_motion’:
+  172  tinywl.c:431:17: error: implicit declaration of function ‘wlr_xcursor_manager_set_cursor_image’; did you mean ‘wlr_xcursor_manager_get_xcursor’? [-Werror=implicit-function-declaration]
+  173  tinywl.c: In function ‘server_cursor_motion’:
+  174  tinywl.c:466:46: error: invalid use of undefined type ‘struct wlr_event_pointer_motion’
+  175  tinywl.c:467:30: error: invalid use of undefined type ‘struct wlr_event_pointer_motion’
+  176  tinywl.c:467:46: error: invalid use of undefined type ‘struct wlr_event_pointer_motion’
+  177  tinywl.c:468:44: error: invalid use of undefined type ‘struct wlr_event_pointer_motion’
+  178  tinywl.c: In function ‘server_cursor_motion_absolute’:
+  179  tinywl.c:482:55: error: invalid use of undefined type ‘struct wlr_event_pointer_motion_absolute’
+  180  tinywl.c:482:70: error: invalid use of undefined type ‘struct wlr_event_pointer_motion_absolute’
+  181  tinywl.c:482:80: error: invalid use of undefined type ‘struct wlr_event_pointer_motion_absolute’
+  182  tinywl.c:483:44: error: invalid use of undefined type ‘struct wlr_event_pointer_motion_absolute’
+  183  tinywl.c: In function ‘server_cursor_button’:
+  184  tinywl.c:494:30: error: invalid use of undefined type ‘struct wlr_event_pointer_button’
+  185  tinywl.c:494:48: error: invalid use of undefined type ‘struct wlr_event_pointer_button’
+  186  tinywl.c:494:63: error: invalid use of undefined type ‘struct wlr_event_pointer_button’
+  187  tinywl.c:499:18: error: invalid use of undefined type ‘struct wlr_event_pointer_button’
+  188  tinywl.c: In function ‘server_cursor_axis’:
+  189  tinywl.c:516:30: error: invalid use of undefined type ‘struct wlr_event_pointer_axis’
+  190  tinywl.c:516:48: error: invalid use of undefined type ‘struct wlr_event_pointer_axis’
+  191  tinywl.c:516:68: error: invalid use of undefined type ‘struct wlr_event_pointer_axis’
+  192  tinywl.c:517:30: error: invalid use of undefined type ‘struct wlr_event_pointer_axis’
+  193  tinywl.c:517:53: error: invalid use of undefined type ‘struct wlr_event_pointer_axis’
+  194  tinywl.c: In function ‘server_new_xdg_surface’:
+  195  tinywl.c:797:43: error: ‘struct <anonymous>’ has no member named ‘map’
+  196  tinywl.c:799:43: error: ‘struct <anonymous>’ has no member named ‘unmap’
+  197  tinywl.c: In function ‘main’:
+  198  tinywl.c:842:26: error: too few arguments to function ‘wlr_backend_autocreate’
+  199  In file included from tinywl.c:9:
+  200  /usr/include/wlr/backend.h:41:21: note: declared here
+  201  tinywl.c:847:27: error: implicit declaration of function ‘wlr_backend_get_renderer’; did you mean ‘wlr_backend_get_drm_fd’? [-Werror=implicit-function-declaration]
+  202  tinywl.c:847:25: error: assignment to ‘struct wlr_renderer *’ from ‘int’ makes pointer from integer without a cast [-Werror=int-conversion]
+  203  tinywl.c:856:56: error: passing argument 2 of ‘wlr_compositor_create’ makes integer from pointer without a cast [-Werror=int-conversion]
+  204  In file included from tinywl.c:12:
+  205  /usr/include/wlr/types/wlr_compositor.h:425:18: note: expected ‘uint32_t’ {aka ‘unsigned int’} but argument is of type ‘struct wlr_renderer *’
+  206  tinywl.c:856:9: error: too few arguments to function ‘wlr_compositor_create’
+  207  /usr/include/wlr/types/wlr_compositor.h:424:24: note: declared here
+  208  tinywl.c:876:28: error: too few arguments to function ‘wlr_xdg_shell_create’
+  209  /usr/include/wlr/types/wlr_xdg_shell.h:304:23: note: declared here
+  210  cc1: all warnings being treated as errors
+  211  make: *** [Makefile:20: tinywl] Error 1
+  212  pkg-config --modversion wlroots
+  213  clear
+  214  cd ..
+  215  cd Desktop
+  216  cd ..
+  217  cd Desktop
+  218  cd wlroots-master
+  219  sudo apt update && sudo apt upgrade -y
+  220  sudo apt install -y     meson     wayland-protocols     libwayland-dev     libegl1-mesa-dev     libgles2-mesa-dev     libvulkan-dev     libvulkan1     libglslang-dev     libdrm-dev     libgbm-dev     libinput-dev     libxkbcommon-dev     libudev-dev     libpixman-1-dev     libseat-dev     hwdata     libdisplay-info-dev     libliftoff-dev
+  221  wget -qO - https://packages.lunarg.com/lunarg-signing-key-pub.asc | sudo apt-key add -
+  222  sudo wget -qO /etc/apt/sources.list.d/lunarg-vulkan.list https://packages.lunarg.com/vulkan/1.3.261.1/lunarg-vulkan.list
+  223  sudo apt update
+  224  sudo apt install vulkan-sdk
+  225  meson setup build/
+  226  ninja -C build/
+  227  sudo apt install -y     meson     wayland-protocols     libwayland-dev     libegl-dev     libgles2-mesa-dev     libvulkan-dev     libglslang-dev     libdrm-dev     libgbm-dev     libinput-dev     libxkbcommon-dev     libudev-dev     libpixman-1-dev     libseat-dev     hwdata     libdisplay-info-dev     libliftoff-dev
+  228  wget -qO - https://packages.lunarg.com/lunarg-signing-key-pub.asc | sudo apt-key add -
+  229  sudo wget -qO /etc/apt/sources.list.d/lunarg-vulkan-1.3.250.list https://packages.lunarg.com/vulkan/1.3.250/lunarg-vulkan-1.3.250.list
+  230  sudo apt update
+  231  sudo apt install vulkan-sdk
+  232  wget https://vulkan.lunarg.com/sdk/download/1.3.250.1/linux/vulkan-sdk_1.3.250.1.tar.gz
+  233  [200~tar -xzvf vulkan-sdk_1.3.250.1.tar.gz
+  234  ~tar -xzvf vulkan-sdk_1.3.250.1.tar.gz
+  235  clear
+  236  sudo apt update
+  237  sudo apt install -y     meson     wayland-protocols     libwayland-dev     libdrm-dev     libxkbcommon-dev     libpixman-1-dev
+  238  sudo apt install meson
+  239  meson setup builddir
+  240  cd builddir
+  241  ninja
+  242  cd ..
+  243  cd tinywl
+  244  meson setup builddir
+  245  cd builddir
+  246  ninja
+  247  cd ..
+  248  wayland-scanner client-header /usr/share/wayland-protocols/stable/xdg-shell/xdg-shell.xml xdg-shell-protocol.h
+  249  gcc -o tinywl tinywl.c -I/usr/include/wayland -I/usr/include/pixman-1 -I. -DWLR_USE_UNSTABLE -lwayland-server -lwlroots -lxkbcommon
+  250  clear
+  251  make
+  252  sudo apt install -y     meson     ninja-build     libwayland-dev     libxkbcommon-dev     libdrm-dev     libpixman-1-dev
+  253  clear
+  254  cd ..
+  255  clear
+  256  cd Desktop
+  257  sudo apt update
+  258  sudo apt install -y     meson     ninja-build     libwayland-dev     libxkbcommon-dev     libdrm-dev     libpixman-1-dev     libinput-dev     libegl-dev     libgles2-mesa-dev     libvulkan-dev     libgbm-dev     libudev-dev     libseat-dev     hwdata     libdisplay-info-dev     libliftoff-dev
+  259  git clone https://gitlab.freedesktop.org/wlroots/wlroots.git
+  260  cd wlroots
+  261  git checkout tags/0.19
+  262  git clone https://gitlab.freedesktop.org/wayland/wayland.git
+  263  cd wayland
+  264  git checkout tags/1.23.1
+  265  meson setup build
+  266  sudo apt install xmlto
+  267  cd ..
+  268  cd tinywl
+  269  make
+  270  meson setup build
+  271  cd ..
+  272  cd Desktop
+  273  cd project
+  274  cd tinywl
+  275  cd wlroots
+  276  meson setup build
+  277  history -x
+  278  history x
+  279  history >x
+  280  clear
+  281  meson setup build
+  282  sudo apt install wayland-server=1.23.1
+  283  git clone https://gitlab.freedesktop.org/wayland/wayland.git
+  284  cd wayland
+  285  git checkout tags/1.23.1
+  286  meson build
+  287  cd build
+  288  ninja
+  289  sudo ninja install
+  290  meson build
+  291  cd ..
+  292  meson setup build
+  293  cd wayland
+  294  meson setup build
+  295  sudo apt install xmlto
+  296  cd ..
+  297  meson setup build
+  298  cd wayland
+  299  meson setup build
+  300  cd build
+  301  ninja
+  302  sudo ninja install
+  303  cd ..
+  304  meson setup build
+  305  make
+  306  cd wlroots
+  307  cd wayland
+  308  wayland-server --version
+  309  cd build
+  310  wayland-server --version
+  311  find / -name "wayland-server" 2>/dev/null
+  312  cd ..
+  313  cd ~/Desktop/project/tinywl/wlroots/wayland
+  314  meson setup build
+  315  ninja
+  316  ninja -C build
+  317  wayland-server --version
+  318  /usr/local/bin
+  319  find build/ -name "wayland-server"
+  320  meson setup build -Dlibraries=true
+  321  ninja -C build
+  322  find build/ -name "libwayland-server*"
+  323  sudo ninja -C build install
+  324  ldconfig -p | grep wayland-server
+  325  cd ..
+  326  meson setup build 
+  327  sudo apt-get update
+  328  sudo apt-get install libdrm-dev
+  329  sudo apt-get install cmake
+  330  meson setup build
+  331  wget https://www.freedesktop.org/software/mesa/dist/libdrm/libdrm-2.4.122.tar.xz
+  332  tar -xf libdrm-2.4.122.tar.xz
+  333  cd libdrm-2.4.122
+  334  ./configure
+  335  make
+  336  sudo make install
+  337  meson setup build
+  338  wget https://www.freedesktop.org/software/mesa/dist/libdrm/libdrm-2.4.122.tar.xz
+  339  tar -xf libdrm-2.4.122.tar.xz
+  340  cd libdrm-2.4.122
+  341  git clone https://gitlab.freedesktop.org/mesa/drm.git
+  342  cd drm
+  343  meson build
+  344  cd build
+  345  ninja
+  346  sudo ninja install
+  347  pkg-config --modversion libdrm
+  348  cd ..
+  349  meson setup build
+  350  sudo apt-get install wayland-protocols
+  351  pkg-config --modversion wayland-protocols
+  352  git clone https://gitlab.freedesktop.org/wayland/wayland-protocols.git
+  353  cd wayland-protocols
+  354  git checkout 1.38
+  355  meson build
+  356  ninja -C build
+  357  sudo ninja -C build install
+  358  cd ..
+  359  meson setup build
+  360  cd /home/tejas/Desktop/project/tinywl
+  361  meson setup build
+  362  cd wlroots
+  363  meson setup build
+  364  meson setup build
+  365  meson setup build --renderers=auto
+  366  meson setup build
+  367  meson configure --renderers=auto
+  368  meson setup build --renderers=auto
+  369  meson setup build
+  370  meson setup build --renderers=auto
+  371  meson setup build
+  372  meson setup build --renderers='auto'
+  373  meson setup build
+  374  meson setup build --renderers='auto'
+  375  meson setup build --renderers=auto
+  376  meson setup build
+  377  meson setup build -Dwlroots:renderers=auto
+  378  git clone https://gitlab.freedesktop.org/wlroots/wlroots.git
+  379  cd tinywl/subprojects/wlroots
+  380  ls -la
+  381  mkdir -p tinywl/subprojects
+  382  mv wlroots tinywl/subprojects/
+  383  tree tinywl
+  384  cd tinywl
+  385  meson setup build -Dwlroots:renderers=auto
+  386  sudo snap install tree  # version 2.1.3+pkg-5852
+  387  tree tinywl
+  388  cd ..
+  389  tree tinywl
+  390  meson setup build
+  391  sudo apt update
+  392  sudo apt install libwlroots-dev
+  393  meson setup build
+  394  rm -rf build
+  395  meson setup build
+  396  cd wlroots
+  397  ls meson.build
+  398  mkdir -p /home/tejas/Desktop/project/tinywl/subprojects
+  399  cat <<EOF > /home/tejas/Desktop/project/tinywl/subprojects/wlroots.wrap
+  400  [wrap-git]
+  401  url = https://github.com/swaywm/wlroots.git
+  402  revision = main
+  403  EOF
+  404  rm -rf /home/tejas/Desktop/project/tinywl/build
+  405  meson setup build
+  406  cd /home/tejas/Desktop/project/tinywl
+  407  rm -rf build
+  408  mv wlroots subprojects/
+  409  meson setup build
+  410  ls /home/tejas/Desktop/project/tinywl/subprojects/wlroots
+  411  ls /home/tejas/Desktop/project/tinywl/subprojects
+  412  cd ..
+  413  cd tinywl
+  414  cd subprojects
+  415  cd wlroots
+  416  meson setup build
+  417  ninja 
+  418  ninja -C build
+  419  clear
+  420  cd
+  421  cd Desktop/project/
+  422  cd
+  423  cd Desktop/
+  424  history > x
+  425  clear
+  426  cd Desktop
+  427  cd project
+  428  sudo apt update
+  429  sudo apt install build-essential git meson pkg-config
+  430  git clone https://github.com/swaywm/wlroots.git
+  431  cd wlroots
+  432  meson setup build
+  433  ninja-C build
+  434  ninja -C build
+  435  cd ..
+  436  meson setup build
+  437  cd wlroots
+  438  mkdir build
+  439  cd build
+  440  meson ..
+  441  meson setup build
+  442  meson setup
+  443  ninja
+  444  sudo ninja install
+  445  cd ~
+  446  cd Desktop
+  447  cd project
+  448  git clone https://gitlab.freedesktop.org/wayland/wayland-protocols.gitcd wayland-protocols
+  449  meson --version
+  450  git clone https://gitlab.freedesktop.org/wayland/wayland-protocols.git
+  451  cd wayland-protocols
+  452  meson setup build
+  453  ninja -C build
+  454  sudo ninja install
+  455  cd build
+  456  ninja -C build
+  457  sudo ninja install
+  458  cd ..
+  459  pkg-config --modversion wlroots
+  460  cd ~
+  461  git clone https://gitlab.freedesktop.org/mesa/drm.git
+  462  cd drm
+  463  cd ..
+  464  cd ~
+  465  cd Desktop
+  466  cd project
+  467  cd ~
+  468  git clone https://gitlab.freedesktop.org/mesa/drm.git
+  469  cd drm
+  470  cd ~
+  471  cd project
+  472  cd desktop
+  473  cd Desktop
+  474  cd project
+  475  git clone https://gitlab.freedesktop.org/mesa/drm.git
+  476  cd drm
+  477  meson setup build
+  478  ninja -C build
+  479  sudo ninja install
+  480  ninja
+  481  cd ..
+  482  git clone https://github.com/xkbcommon/libxkbcommon.git
+  483  cd libxkbcommon
+  484  meson setup build
+  485  sudo apt update
+  486  sudo apt install bison
+  487  meson setup build
+  488  sudo apt install libxcb-xkb-dev
+  489  meson setup build
+  490  ninja -C build
+  491  sudo install ninja
+  492  sudo ninja install
+  493  cd ..
+  494  git clone https://gitlab.freedesktop.org/pixman/pixman.git
+  495  cd pixman
+  496  meson setup build
+  497  ninja -C build
+  498  cd ..
+  499  git clone https://gitlab.freedesktop.org/mesa/mesa.git
+  500  cd mesa
+  501  meson setup build
+  502  sudo apt install glslang-tools
+  503  meson setup build
+  504  sudo apt install libclc-dev
+  505  cd ..
+  506  git clone https://gitlab.freedesktop.org/wayland/wayland.git
+  507  cd wayland
+  508  meson setup build
+  509  ninja -C build
+  510  cd ..
+  511  git clone https://gitlab.freedesktop.org/libinput/libinput.git
+  512  cd libinput
+  513  meson setup build
+  514  cd ..
+  515  git clone https://gitlab.freedesktop.org/wayland/wayland.git
+  516  cd wayland
+  517  meson build
+  518  cd build
+  519  ninja wayland-scanner
+  520  sudo cp wayland-scanner /usr/local/bin/
+  521  ninja wayland-scanner
+  522  ninca -C build wayland-scanner
+  523  ninja -C build wayland-scanner
+  524  cd ..
+  525  cd drm
+  526  meson setup build
+  527  ninja -C build
+  528  ninja
+  529  ls build
+  530  cd ..
+  531  cd wlroots
+  532  cd examples/tinywl
+  533  cd ..
+  534  cd ~
+  535  cd project
+  536  cd Desktop
+  537  cd project
+  538  git clone https://github.com/swaywm/wlroots.git
+  539  cd wlroots
+  540  meson setup build
+  541  ninja -C build
+  542  cd tinywl
+  543  gcc -o tinywl tinywl.c -lwayland-client -lwlroots
+  544  tree project
+  545  project tree
+  546  meson setup build
+  547  gcc -o tinywl tinywl.c -lwayland-client -lwlroots -DWLR_USE_UNSTABLE
+  548  find /usr/include -name pixman.h
+  549  gcc -o tinywl tinywl.c -I/usr/include/pixman-1 -I/usr/include/wlr -lwayland-client -lwlroots -lpixman-1 -DWLR_USE_UNSTABLE
+  550  find /path/to/wayland-protocols -name "xdg-shell-protocol.h"
+  551  cd ..
+  552  git submodule update --init --recursive
+  553  sudo apt install wayland-scanner
+  554  git clone https://gitlab.freedesktop.org/wayland/wayland.git
+  555  cd wayland
+  556  sudo apt install wayland-scanner
+  557  cd ..
+  558  cd wlroot
+  559  cd wlroots
+  560  cd tinywl
+  561  meson setup build
+  562  cd ..
+  563  meson setup build
+  564  meson setup --reconfigure
+  565  meson setup 00wipe
+  566  cd tinywl
+  567  meson setup build
+  568  cd ..
+  569  cd build
+  570  ninja -C build
+  571  rm -rf build
+  572  cd ..
+  573  meson setup build
+  574  ninja
+  575  ninja -C build
+  576  cd ..
+  577  tree project
+  578  ls -ld project
+  579  cd ..
+  580  ls -ld project
+  581  tree project
+  582  clear
+  583  cd project
+  584  cd drm
+  585  meson setup build
+  586  ninja -C build
+  587  cd ..
+  588  tree wlroots
+  589  cd wlroots
+  590  tree build
+  591  cd tinywl
+  592  meson setup build
+  593  cd ..
+  594  find build/ -name "wayland-server"
+  595  cd ..
+  596  cd wayland
+  597  find build/ -name "wayland-server"
+  598  cd src
+  599  find build/ -name "wayland-server"
+  600  cd ..
+  601  sudo meson install
+  602  meson --version
+  603  ninja --version
+  604  cd wayland
+  605  meson setup build --reconfigure
+  606  ninja -C build
+  607  cd ..
+  608  git status
+  609  cd wlroots
+  610  git status
+  611  make
+  612  ls build/examples/tinywl
+  613  cd tinywl
+  614  make
+  615  echo $WAYLAND_DISPLAY
+  616  chvt 3
+  617  sudo chvt 3
+  618  cd ..
+  619  sudo find / -name libwlroots.so.10
+  620  echo "export LD_LIBRARY_PATH=/usr/local/lib/aarch64-linux-gnu:$LD_LIBRARY_PATH" >> ~/.bashrc
+  621  source ~/.bashrc
+  622  ldconfig -p | grep libwlroots
+  623  sudo ln -s /lib/aarch64-linux-gnu/libwlroots.so.12 /usr/local/lib/aarch64-linux-gnu/libwlroots.so.10
+  624  ls -l /usr/local/lib/aarch64-linux-gnu/libwlroots.so.10
+  625  sudo cp /usr/local/lib/aarch64-linux-gnu/libwlroots.so.10 /usr/local/lib/aarch64-linux-gnu/libwlroots.so.10.bak
+  626  sudo rm /usr/local/lib/aarch64-linux-gnu/libwlroots.so.10
+  627  sudo ln -s /lib/aarch64-linux-gnu/libwlroots.so.12 /usr/local/lib/aarch64-linux-gnu/libwlroots.so.10
+  628  sudo ldconfig
+  629  cd tinywl
+  630  sudo chvt 3
+  631  cd Desktop
+  632  cd project
+  633  wlroots --version
+  634  cd wlroots
+  635  wlroots --version
+  636  pkg-config --modversion wlroots
+  637  history >x
+  638  cd Desktop
+  639  cd wlroots
+  640  cd project
+  641  cd wlroots
+  642  wayland-scanner --version
+  643  chmut + 3
+  644  ./
+  645  tcd Desktop
+  646  cd Desktop
+  647  cd project
+  648  ./tinywl
+  649  cd wlroots
+  650  cd tinywl
+  651  ./tinywl
+  652  sudo chvt 1
+  653  ./tinywl
+  654  sudo chvt1
+  655  sudo chvt 1
+  656  cd Desktop/
+  657  history > x
+  658  clear
+  659  cd project
+  660  make clean
+  661  cd wlroots
+  662  cd tinywl
+  663  make clean
+  664  export PKG_CONFIG_PATH=/home/tejas/Desktop/new_tinywl/wlroots/tinywl/wlroots/build/meson-private:$PKG_CONFIG_PATH
+  665  pkg-config --cflags --libs wlroots-0.19
+  666  make clean
+  667  make
+  668  make CFLAGS+=" -DWLR_USE_UNSTABLE"
+  669  make
+  670  wayland-scanner client-header /usr/share/wayland-protocols/stable/xdg-shell/xdg-shell.xml xdg-shell-protocol.h
+  671  make
+  672  find /usr/share/wayland-protocols -name "xdg-shell.xml"
+  673  wayland-scanner client-header /usr/share/wayland-protocols/stable/xdg-shell/xdg-shell.xml xdg-shell-protocol.h
+  674  make
+  675  make CFLAGS="-g -Werror -DWLR_USE_UNSTABLE -I/usr/local/include -I/usr/local/include/libdrm -I/usr/include/pixman-1"
+  676  wayland-scanner client-header /usr/share/wayland-protocols/stable/xdg-shell/xdg-shell.xml xdg-shell-protocol.h
+  677  make CFLAGS="-g -Werror -DWLR_USE_UNSTABLE -I/usr/local/include -I/usr/local/include/libdrm -I/usr/include/pixman-1"
+  678  make
+  679  cd Desktop
+  680  cd new_tinywl
+  681  $(WAYLAND_SCANNER) server-header $(WAYLAND_PROTOCOLS)/stable/xdg-shell/xdg-shell.xml xdg-shell-protocol.h
+  682  pkg-config --cflags wlroots-0.19
+  683  pkg-config --libs wlroots-0.19
+  684  find / -name "wlroots-0.19.pc" 2>/dev/null
+  685  export PKG_CONFIG_PATH=/home/tejas/Desktop/new_tinywl/wlroots/build/meson-private:$PKG_CONFIG_PATH
+  686  pkg-config --cflags --libs wlroots-0.19
+  687  cd Desktop/project/
+  688  ls
+  689  cd wlroots/
+  690  ls
+  691  cd ..
+  692  ls
+  693  cd new_tinywl/
+  694  ls
+  695  cd wlroots/
+  696  ;s
+  697  ls
+  698  cd tinywl/
+  699  meson setup build
+  700  cd..
+  701  cd ..
+  702  meson setup build
+  703  cd tinywl/
+  704  make
+  705  pkg-config --modversion wlroots
+  706  sudo apt update
+  707  sudo apt install libwlroots-dev
+  708  make
+  709  cd Desktop/new_tinywl/
+  710  cd wlroots/tinywl/
+  711  sudo apt remove --purge libwlroots-dev
+  712  sudo apt update
+  713  sudo apt install git meson ninja-build pkg-config libwayland-dev wayland-protocols libegl-dev libgles2-mesa-dev libxkbcommon-dev
+  714  make
+  715  pkg-config --modversion wlroots
+  716  find /usr /usr/local -name backend.h
+  717  find /usr /usr/local -name backend.h | grep wlr
+  718  cd
+  719  cd Desktop/
+  720  cd new_tinywl/wlroots/
+  721  git checkout 0.19.0
+  722  find /usr/local/include -name backend.h
+  723  find /usr/local/lib/pkgconfig -name wlroots.pc
+  724  ls build
+  725  rm -rf build
+  726  meson build setup
+  727  meson setup build
+  728  ninja -C build
+  729  ninja -C build -v
+  730  sudo apt update
+  731  sudo apt install meson ninja-build libwayland-dev wayland-protocols libpixman-1-dev libxkbcommon-dev libudev-dev libsystemd-dev
+  732  rm -rf build
+  733  meson build
+  734  ninja -C build
+  735  cd
+  736  clear
+  737  cd Desktop/tinywl/
+  738  git clone https://gitlab.freedesktop.org/wlroots/wlroots.git
+  739  cd wlroots/
+  740  sudo apt update
+  741  sudo apt install meson ninja-build libx11-dev libxrandr-dev libxinerama-dev   libxcursor-dev libwayland-dev libwayland-egl-backend-dev   libegl1-mesa-dev libinput-dev libevdev-dev libpixman-1-dev   libudev-dev pkg-config
+  742  meson setup build
+  743  pkg-config --modversion wlroots-0.19
+  744  find /usr /usr/local ~/ -name "wlroots-0.19.pc"
+  745  echo 'export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH' >> ~/.bashrc
+  746  source ~/.bashrc
+  747  pkg-config --modversion wlroots-0.19
+  748  find /usr /usr/local ~/ -name "wlroots-0.19.pc"
+  749  sudo ninja -C build install
+  750  echo $XDG_SESSION_TYPE
+  751  export WAYLAND_DISPLAY=wayland-0
+  752  meson compile -C build/
+  753  cd tinywl/
+  754  meson setup build
+  755  make
+  756  sudo chvt 3
+  757  history > y
