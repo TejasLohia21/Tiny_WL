@@ -1,19 +1,16 @@
-#Building an advanced tinywl system
+Building an Advanced TinyWL System
 
-Tasks Done: 
+Tasks Completed
+	•	Successfully cloned the repository and resolved all existing path issues.
+	•	Cloned multiple unavailable libraries and linked them with the main files and directories.
+	•	Replicated the setup and documented the process thoroughly.
+	•	Implemented functionality to execute multiple windows in the TinyWL compositor with stacking behavior.
+	•	Edited and fixed the maximize and minimize code to ensure proper functionality.
+	•	Achieved tiling behavior with automatic positioning: centralized positioning for a single window and adjacent stacking for multiple windows.
+	•	Developed a dynamic storage structure to manage the position and size of windows, enabling proper minimization functionality.
+	•	Implemented an advanced snapping feature with pixel proximity checks and timing adjustments when windows come into proximity.
+	•	Enabled windows to open inside the TinyWL compositor without requiring explicit commands for those applications.
 
--Cloning of this repository and resolving all the existing path issues.
--Cloning multiple unavailable libraries and linking with the main file and directories/path.
--Replication and documentation.
--Execution of multiple windows in a tinyWL compositor(stacking).
--Editing Maximize and minimizing code to make it work.
--Execution of Tiling behavior, with auto positioning differently both in case of single window(centralization) and adjacent stacking in case of multiple windows.
--Making a dynamic storage structure to handle the position and size of the windows in case of multiple windows, and using it to miminize the windows.
--Execution of an advanced function of snapping with pixel proximity check and time after the windows are in proximity.
--Opening of windows inside tinyWL compositor without being required to write explicit command for those apps.
-
-Next task: 
-
--Some error in the snapping function, because of which, sometimes windows are overlapping by some pixels.
--Opening of windows inside the tinyWL compositor thru some good visual display of all the apps visible.
-
+Next Tasks
+	•	Fix an issue in the snapping function where windows occasionally overlap by a few pixels.
+	•	Enhance the visual display of all apps within the TinyWL compositor, enabling better interaction and navigation when opening windows.
