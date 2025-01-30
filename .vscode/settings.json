@@ -5,6 +5,9 @@
         "wlr_subcompositor.h": "c",
         "wlr_xcursor_manager.h": "c",
         "log.h": "c",
-        "wlr_scene.h": "c"
+        "wlr_scene.h": "c",
+        "wlr_cursor.h": "c",
+        "wlr_output_layout.h": "c",
+        "limits.h": "c"
     }
 }
