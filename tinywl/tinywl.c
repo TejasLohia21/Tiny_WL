@@ -27,15 +27,13 @@
 #include <wlr/util/box.h>
 #include <limits.h> 
 
-// Add these macros after includes but before struct definitions
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 
 //adding following for time based implementation
-#define PROXIMITY_THRESHOLD 30 // Pixels
-#define TIME_THRESHOLD_MS 4000  // 500 milliseconds
+#define PROXIMITY_THRESHOLD 30 
+#define TIME_THRESHOLD_MS 3000
 
-// Add this new structure at the top with other structs
 struct tinywl_group {
     struct wl_list toplevels;
 };
@@ -143,6 +141,7 @@ struct tinywl_keyboard {
 //adding a global count holder
 int count_windows = 0;
 
+//following has been added for explicit declaratioj
 void merge_groups(struct tinywl_toplevel *toplevel, struct tinywl_toplevel *other);
 
 
@@ -191,78 +190,6 @@ void merge_groups(struct tinywl_toplevel *toplevel, struct tinywl_toplevel *othe
     wlr_log(WLR_DEBUG, "Merged two window groups successfully.");
 }
 
-// static bool check_proximity(struct tinywl_toplevel *toplevel) {
-//     struct tinywl_server *server = toplevel->server;
-//     const int proximity = 30; // pixels
-
-
-// 	// newly added
-// 	// Add buffer for newly created windows
-//     if (toplevel->xdg_toplevel->base->surface->current.width == 0 ||
-//         toplevel->xdg_toplevel->base->surface->current.height == 0) {
-//         return false;
-//     }
-    
-//     // Get screen coordinates of current window
-//     struct wlr_box a = {
-//         .x = toplevel->scene_tree->node.x,
-//         .y = toplevel->scene_tree->node.y,
-//         .width = toplevel->xdg_toplevel->current.width,
-//         .height = toplevel->xdg_toplevel->current.height
-//     };
-
-//     struct tinywl_toplevel *other;
-//     wl_list_for_each(other, &server->toplevels, link) {
-//         if (other == toplevel) continue;
-
-//         // Get screen coordinates of other window
-//         struct wlr_box b = {
-//             .x = other->scene_tree->node.x,
-//             .y = other->scene_tree->node.y,
-//             .width = other->xdg_toplevel->current.width,
-//             .height = other->xdg_toplevel->current.height
-//         };
-
-//         // Calculate actual distances between all edges
-//         bool horizontal_proximity = 
-//             (abs(a.x - (b.x + b.width)) < proximity) ||  // a left vs b right
-//             (abs((a.x + a.width) - b.x) < proximity) ||  // a right vs b left
-//             (abs(a.x - b.x) < proximity);                // overlapping x-axis
-
-//         bool vertical_proximity =
-//             (abs(a.y - (b.y + b.height)) < proximity) || // a top vs b bottom
-//             (abs((a.y + a.height) - b.y) < proximity) || // a bottom vs b top
-//             (abs(a.y - b.y) < proximity);                // overlapping y-axis
-
-//         if (horizontal_proximity && vertical_proximity) {
-//             if (!toplevel->group && !other->group) {
-//                 create_group(toplevel, other);
-//                 wlr_log(WLR_DEBUG, "Created new group with windows");
-//                 return true;
-//             }
-//             else if (toplevel->group && other->group && 
-//                     toplevel->group != other->group) {
-//                 // Merge groups
-//                 struct tinywl_toplevel *member;
-//                 struct tinywl_group *old_group = other->group;
-//                 wl_list_for_each(member, &old_group->toplevels, group_link) {
-//                     member->group = toplevel->group;
-//                     wl_list_remove(&member->group_link);
-//                     wl_list_insert(&toplevel->group->toplevels, &member->group_link);
-//                 }
-//                 free(old_group);
-//                 wlr_log(WLR_DEBUG, "Merged window groups");
-//                 return true;
-//             }
-//             else if (!other->group) {
-//                 add_to_group(toplevel->group, other);
-//                 wlr_log(WLR_DEBUG, "Added window to existing group");
-//                 return true;
-//             }
-//         }
-//     }
-//     return false;
-// }
 
 
 static bool check_proximity(struct tinywl_toplevel *toplevel) {
@@ -315,8 +242,13 @@ static bool check_proximity(struct tinywl_toplevel *toplevel) {
                 toplevel->proximity_timestamp = current_time;
             }
 
+			// time_t current_time = clock();
+			long elapsed_time = (current_time - toplevel->proximity_timestamp) * 1000 / CLOCKS_PER_SEC;
+
+			// if (horizontal_proximity && vertical_proximity && elapsed_time >= 10000) {
+
             // Check if the time threshold has elapsed
-            if (horizontal_proximity && vertical_proximity) {
+            if (horizontal_proximity && vertical_proximity && elapsed_time >= 1500) {
 				if (!toplevel->group && !other->group) {
 					create_group(toplevel, other);  // Create a new group if both have no group
 					wlr_log(WLR_DEBUG, "Created new group with windows");
@@ -342,47 +274,6 @@ static bool check_proximity(struct tinywl_toplevel *toplevel) {
 }
 
 
-
-
-// Maximising the window by clicking on the maximise button but only when cursor is moving
-
-// static void xdg_toplevel_request_maximize(
-//         struct wl_listener *listener, void *data) {
-//     struct tinywl_toplevel *toplevel =
-//         wl_container_of(listener, toplevel, request_maximize);
-//     struct tinywl_server *server = toplevel->server;
-
-//     if (!toplevel->xdg_toplevel->base->initialized) return;
-
-//     toplevel->maximized = !toplevel->maximized;
-
-//     if (toplevel->maximized) {
-//         // Save current geometry
-//         toplevel->saved_geometry.x = toplevel->scene_tree->node.x;
-//         toplevel->saved_geometry.y = toplevel->scene_tree->node.y;
-//         toplevel->saved_geometry.width = toplevel->xdg_toplevel->current.width;
-//         toplevel->saved_geometry.height = toplevel->xdg_toplevel->current.height;
-
-//         // Maximize to output dimensions
-//         struct wlr_box layout_box;
-//         wlr_output_layout_get_box(server->output_layout, NULL, &layout_box);
-        
-//         wlr_xdg_toplevel_set_size(toplevel->xdg_toplevel, 
-//             layout_box.width, layout_box.height);
-//         wlr_scene_node_set_position(&toplevel->scene_tree->node,
-//             layout_box.x, layout_box.y);
-//     } else {
-//         // Restore original geometry
-//         wlr_xdg_toplevel_set_size(toplevel->xdg_toplevel,
-//             toplevel->saved_geometry.width,
-//             toplevel->saved_geometry.height);
-//         wlr_scene_node_set_position(&toplevel->scene_tree->node,
-//             toplevel->saved_geometry.x,
-//             toplevel->saved_geometry.y);
-//     }
-
-//     wlr_xdg_surface_schedule_configure(toplevel->xdg_toplevel->base);
-// }
 
 // the following function is correctly maximising the window
 static void xdg_toplevel_request_maximize(
@@ -561,44 +452,6 @@ static void keyboard_handle_key(
 	}
 }
 
-// static void keyboard_handle_key(struct wl_listener *listener, void *data) {
-//     /* This event is raised when a key is pressed or released. */
-//     struct tinywl_keyboard *keyboard = wl_container_of(listener, keyboard, key);
-//     struct tinywl_server *server = keyboard->server;
-//     struct wlr_keyboard_key_event *event = data;
-//     struct wlr_seat *seat = server->seat;
-
-//     /* Translate libinput keycode -> xkbcommon */
-//     uint32_t keycode = event->keycode + 8;
-//     const xkb_keysym_t *syms;
-//     int nsyms = xkb_state_key_get_syms(keyboard->wlr_keyboard->xkb_state, keycode, &syms);
-
-//     bool handled = false;
-//     uint32_t modifiers = wlr_keyboard_get_modifiers(keyboard->wlr_keyboard);
-
-//     // Check if Shift is pressed and process the key combinations
-//     if ((modifiers & WLR_MODIFIER_SHIFT) && event->state == WL_KEYBOARD_KEY_STATE_PRESSED) {
-//         for (int i = 0; i < nsyms; i++) {
-//             if (syms[i] == XKB_KEY_Left) {
-//                 // Shift + Left Arrow: Call the function for left stack
-//                 stack_left(server); //these are yet to be defined
-//                 handled = true;
-//             } else if (syms[i] == XKB_KEY_Right) {
-//                 // Shift + Right Arrow: Call the function for right stack
-//                 stack_right(server);
-//                 handled = true;
-//             }
-//         }
-//     }
-
-//     if (!handled) {
-//         /* Otherwise, we pass it along to the client. */
-//         wlr_seat_set_keyboard(seat, keyboard->wlr_keyboard);
-//         wlr_seat_keyboard_notify_key(seat, event->time_msec, event->keycode, event->state);
-//     }
-// }
-
-
 
 static void keyboard_handle_destroy(struct wl_listener *listener, void *data) {
 	/* This event is raised by the keyboard base wlr_input_device to signal
@@ -746,46 +599,6 @@ static void reset_cursor_mode(struct tinywl_server *server) {
 	server->grabbed_toplevel = NULL;
 }
 
-// static void process_cursor_move(struct tinywl_server *server) {
-// 	/* Move the grabbed toplevel to the new position. */
-// 	struct tinywl_toplevel *toplevel = server->grabbed_toplevel;
-// 	wlr_scene_node_set_position(&toplevel->scene_tree->node,
-// 		server->cursor->x - server->grab_x,
-// 		server->cursor->y - server->grab_y);
-// }
-
-
-// modified
-// Modify the process_cursor_move function to handle groups
-// static void process_cursor_move(struct tinywl_server *server) {
-//     struct tinywl_toplevel *toplevel = server->grabbed_toplevel;
-//     double base_dx = server->cursor->x - server->grab_x;
-//     double base_dy = server->cursor->y - server->grab_y;
-
-//     if (toplevel->group) {
-//         // Store original positions first
-//         // struct wlr_box original_pos;
-//         struct tinywl_toplevel *member;
-        
-//         // Calculate delta from original grab position
-//         double dx = base_dx - toplevel->scene_tree->node.x;
-//         double dy = base_dy - toplevel->scene_tree->node.y;
-
-//         wl_list_for_each(member, &toplevel->group->toplevels, group_link) {
-//             wlr_scene_node_set_position(&member->scene_tree->node,
-//                 member->scene_tree->node.x + dx,
-//                 member->scene_tree->node.y + dy);
-//         }
-//     } else {
-//         wlr_scene_node_set_position(&toplevel->scene_tree->node, base_dx, base_dy);
-//     }
-
-//     // Check proximity after all movements
-//     struct tinywl_toplevel *any_toplevel;
-//     wl_list_for_each(any_toplevel, &server->toplevels, link) {
-//         check_proximity(any_toplevel);
-//     }
-// }
 
 static void process_cursor_move(struct tinywl_server *server) {
     struct tinywl_toplevel *toplevel = server->grabbed_toplevel;
@@ -814,81 +627,6 @@ static void process_cursor_move(struct tinywl_server *server) {
         check_proximity(any_toplevel);
     }
 }
-
-
-
-
-// static void process_cursor_resize(struct tinywl_server *server) {
-
-// 	/*
-// 	 * Resizing the grabbed toplevel can be a little bit complicated, because we
-// 	 * could be resizing from any corner or edge. This not only resizes the
-// 	 * toplevel on one or two axes, but can also move the toplevel if you resize
-// 	 * from the top or left edges (or top-left corner).
-// 	 *
-// 	 * Note that some shortcuts are taken here. In a more fleshed-out
-// 	 * compositor, you'd wait for the client to prepare a buffer at the new
-// 	 * size, then commit any movement that was prepared.
-// 	 */
-
-// 	struct tinywl_toplevel *toplevel = server->grabbed_toplevel;
-// 	double border_x = server->cursor->x - server->grab_x;
-// 	double border_y = server->cursor->y - server->grab_y;
-// 	int new_left = server->grab_geobox.x;
-// 	int new_right = server->grab_geobox.x + server->grab_geobox.width;
-// 	int new_top = server->grab_geobox.y;
-// 	int new_bottom = server->grab_geobox.y + server->grab_geobox.height;
-
-// 	if (server->resize_edges & WLR_EDGE_TOP) {
-// 		new_top = border_y;
-// 		if (new_top >= new_bottom) {
-// 			new_top = new_bottom - 1;
-// 		}
-// 	} else if (server->resize_edges & WLR_EDGE_BOTTOM) {
-// 		new_bottom = border_y;
-// 		if (new_bottom <= new_top) {
-// 			new_bottom = new_top + 1;
-// 		}
-// 	}
-// 	if (server->resize_edges & WLR_EDGE_LEFT) {
-// 		new_left = border_x;
-// 		if (new_left >= new_right) {
-// 			new_left = new_right - 1;
-// 		}
-// 	} else if (server->resize_edges & WLR_EDGE_RIGHT) {
-// 		new_right = border_x;
-// 		if (new_right <= new_left) {
-// 			new_right = new_left + 1;
-// 		}
-// 	}
-
-// 	struct wlr_box *geo_box = &toplevel->xdg_toplevel->base->geometry;
-// 	wlr_scene_node_set_position(&toplevel->scene_tree->node,
-// 		new_left - geo_box->x, new_top - geo_box->y);
-
-// 	int new_width = new_right - new_left;
-// 	int new_height = new_bottom - new_top;
-// 	wlr_xdg_toplevel_set_size(toplevel->xdg_toplevel, new_width, new_height);
-
-// 	// newly added
-// 	    if (toplevel->group) {
-//         struct tinywl_toplevel *member;
-//         wl_list_for_each(member, &toplevel->group->toplevels, group_link) {
-//             // Apply same resize logic to group members
-//             wlr_scene_node_set_position(&member->scene_tree->node,
-//                 new_left - geo_box->x + (member->scene_tree->node.x - toplevel->scene_tree->node.x),
-//                 new_top - geo_box->y + (member->scene_tree->node.y - toplevel->scene_tree->node.y));
-                
-//             wlr_xdg_toplevel_set_size(member->xdg_toplevel,
-//                 new_width + (member->xdg_toplevel->current.width - toplevel->xdg_toplevel->current.width),
-//                 new_height + (member->xdg_toplevel->current.height - toplevel->xdg_toplevel->current.height));
-//         }
-//     }
-
-//     check_proximity(toplevel);
-// }
-
-
 
 
 // modified
@@ -981,15 +719,6 @@ static void process_cursor_resize(struct tinywl_server *server) {
 
     check_proximity(toplevel);
 }
-
-
-
-
-
-
-
-
-
 
 static void process_cursor_motion(struct tinywl_server *server, uint32_t time) {
 	/* If the mode is non-passthrough, delegate to those functions. */
@@ -1218,203 +947,6 @@ static void server_new_output(struct wl_listener *listener, void *data) {
 }
 
 
-//following code resolved the issue of the window going to full screen on half of the screen when cursor was moved
-
-// static void xdg_toplevel_map(struct wl_listener *listener, void *data) {
-//     struct tinywl_toplevel *toplevel = wl_container_of(listener, toplevel, map);
-//     struct tinywl_server *server = toplevel->server;
-
-//     // Insert the toplevel into the list of managed windows
-//     wl_list_insert(&server->toplevels, &toplevel->link);
-
-//     // Get the screen layout dimensions
-//     struct wlr_box layout_box;
-//     wlr_output_layout_get_box(server->output_layout, NULL, &layout_box);
-
-//     // Count existing windows (excluding the one being mapped)
-//     int num_windows = 0;
-//     struct tinywl_toplevel *window;
-//     wl_list_for_each(window, &server->toplevels, link) {
-//         if (window != toplevel) num_windows++;
-//     }
-
-//     if (num_windows >= 1) {
-//         // Tiling mode for 2+ windows
-//         int new_window_width = layout_box.width / 2;
-//         int new_window_height = layout_box.height;
-
-//         wlr_xdg_toplevel_set_size(toplevel->xdg_toplevel, new_window_width, new_window_height);
-        
-//         // Position new window on the right if odd number of existing windows
-//         if (num_windows % 2 == 1) {
-//             toplevel->scene_tree->node.x = layout_box.x + new_window_width;
-//         } else {
-//             toplevel->scene_tree->node.x = layout_box.x;
-//         }
-        
-//         toplevel->scene_tree->node.y = layout_box.y;
-//     } else {
-//         // Center the first window
-//         int window_width = toplevel->xdg_toplevel->base->geometry.width;
-//         int window_height = toplevel->xdg_toplevel->base->geometry.height;
-        
-//         toplevel->scene_tree->node.x = layout_box.x + (layout_box.width - window_width) / 2;
-//         toplevel->scene_tree->node.y = layout_box.y + (layout_box.height - window_height) / 2;
-//     }
-
-//     wlr_scene_node_raise_to_top(&toplevel->scene_tree->node);
-//     focus_toplevel(toplevel);
-// }
-
-//following code is perfect splitting the screen into two
-
-// static void xdg_toplevel_map(struct wl_listener *listener, void *data) {
-//     /* Called when the surface is mapped, or ready to display on-screen. */
-//     struct tinywl_toplevel *toplevel = wl_container_of(listener, toplevel, map);
-//     struct tinywl_server *server = toplevel->server;
-
-//     // Insert the toplevel into the list of managed windows
-//     wl_list_insert(&server->toplevels, &toplevel->link);
-
-//     // Get the screen layout dimensions
-//     struct wlr_box layout_box;
-//     wlr_output_layout_get_box(server->output_layout, NULL, &layout_box);
-
-//     // Calculate the new width and height for the windows
-//     int new_window_width = layout_box.width / 2;
-//     int new_window_height = layout_box.height;
-
-//     // Resize the window to half the screen width
-//     wlr_xdg_toplevel_set_size(toplevel->xdg_toplevel, new_window_width, new_window_height);
-
-//     // Count the number of windows to determine placement
-//     int num_windows = 0;
-//     struct tinywl_toplevel *window;
-//     wl_list_for_each(window, &server->toplevels, link) {
-//         num_windows++;
-//     }
-
-// 	printf("%d\n", num_windows);
-// 	printf("%s\n", "THE OUTPUT: ");
-
-
-//     // Determine window position based on count
-//     if (num_windows % 2 == 1) {
-//         // For odd number (1st, 3rd, etc.), place on the left
-//         toplevel->scene_tree->node.x = layout_box.x;
-//     } else {
-//         // For even number (2nd, 4th, etc.), place on the right
-//         toplevel->scene_tree->node.x = layout_box.x + new_window_width;
-//     }
-
-//     // Vertically position the window to fill the screen height
-//     toplevel->scene_tree->node.y = layout_box.y;
-
-//     // Optionally raise the window to the top of the stack
-//     wlr_scene_node_raise_to_top(&toplevel->scene_tree->node);
-
-//     // Focus the toplevel window
-//     focus_toplevel(toplevel);
-// }
-
-
-// Following functions is corectly opening 2 windows in a tiling manner but not in full screen mode
-
-// static void xdg_toplevel_map(struct wl_listener *listener, void *data) {
-//     struct tinywl_toplevel *toplevel = wl_container_of(listener, toplevel, map);
-//     struct tinywl_server *server = toplevel->server;
-
-//     // Count existing windows before adding new one
-//     int window_count = 0;
-//     struct tinywl_toplevel *win;
-//     wl_list_for_each(win, &server->toplevels, link) window_count++;
-
-//     // Add new window to list
-//     wl_list_insert(&server->toplevels, &toplevel->link);
-//     window_count++; // Now includes the new window
-
-//     struct wlr_box layout_box;
-//     wlr_output_layout_get_box(server->output_layout, NULL, &layout_box);
-
-//     if (window_count > 1) {
-//         // Calculate dimensions
-//         int width = layout_box.width / window_count;
-//         int x_pos = layout_box.x;
-
-//         // Reposition all windows
-//         wl_list_for_each(win, &server->toplevels, link) {
-//             // Only set size for new windows
-//             if (win == toplevel) {
-//                 wlr_xdg_toplevel_set_size(win->xdg_toplevel, width, layout_box.height);
-//             }
-            
-//             // Position window
-//             wlr_scene_node_set_position(&win->scene_tree->node, x_pos, layout_box.y);
-//             x_pos += width;
-//         }
-//     } else {
-//         // Center single window using actual window dimensions
-//         struct wlr_box *geo = &toplevel->xdg_toplevel->base->geometry;
-//         wlr_scene_node_set_position(&toplevel->scene_tree->node,
-//             layout_box.x + (layout_box.width - geo->width) / 2,
-//             layout_box.y + (layout_box.height - geo->height) / 2
-//         );
-//     }
-
-//     wlr_scene_node_raise_to_top(&toplevel->scene_tree->node);
-//     focus_toplevel(toplevel);
-// }
-
-
-// Following function is correctly opening 2 windows in full screen in tiling manner but
-// when trying to open one window it isn't appearing in the center of screen
-
-// static void xdg_toplevel_map(struct wl_listener *listener, void *data) {
-//     struct tinywl_toplevel *toplevel = wl_container_of(listener, toplevel, map);
-//     struct tinywl_server *server = toplevel->server;
-
-//     // Count existing windows before adding new one
-//     int window_count = 0;
-//     struct tinywl_toplevel *win;
-//     wl_list_for_each(win, &server->toplevels, link) window_count++;
-
-//     // Add new window to list
-//     wl_list_insert(&server->toplevels, &toplevel->link);
-//     window_count++; // Total windows now
-
-//     struct wlr_box layout_box;
-//     wlr_output_layout_get_box(server->output_layout, NULL, &layout_box);
-
-//     if (window_count > 1) {
-//         // Split screen into equal vertical sections
-//         int width = layout_box.width / window_count;
-//         int x_pos = layout_box.x;
-
-//         // Position and resize all windows
-//         wl_list_for_each(win, &server->toplevels, link) {
-//             // Set size first
-//             wlr_xdg_toplevel_set_size(win->xdg_toplevel, width, layout_box.height);
-            
-//             // Then position
-//             wlr_scene_node_set_position(&win->scene_tree->node, x_pos, layout_box.y);
-//             x_pos += width;
-//         }
-//     } else {
-//         // First window gets full screen
-//         wlr_xdg_toplevel_set_size(toplevel->xdg_toplevel, 
-//             layout_box.width, layout_box.height);
-//         wlr_scene_node_set_position(&toplevel->scene_tree->node,
-//             layout_box.x, layout_box.y);
-//     }
-
-//     wlr_scene_node_raise_to_top(&toplevel->scene_tree->node);
-//     focus_toplevel(toplevel);
-// }
-
-// Following function is correctly opening 2 windows in full screen in tiling manner but
-// when trying to open one window it is appearing in the center of screen and when one window
-// is closing, another window is getting centered
-
 static void xdg_toplevel_map(struct wl_listener *listener, void *data) {
     struct tinywl_toplevel *toplevel = wl_container_of(listener, toplevel, map);
     struct tinywl_server *server = toplevel->server;
@@ -1511,18 +1043,6 @@ static void xdg_toplevel_unmap(struct wl_listener *listener, void *data) {
     }
 }
 
-
-// static void xdg_toplevel_unmap(struct wl_listener *listener, void *data) {
-// 	/* Called when the surface is unmapped, and should no longer be shown. */
-// 	struct tinywl_toplevel *toplevel = wl_container_of(listener, toplevel, unmap);
-
-// 	/* Reset the cursor mode if the grabbed toplevel was unmapped. */
-// 	if (toplevel == toplevel->server->grabbed_toplevel) {
-// 		reset_cursor_mode(toplevel->server);
-// 	}
-
-// 	wl_list_remove(&toplevel->link);
-// }
 
 static void xdg_toplevel_commit(struct wl_listener *listener, void *data) {
 	/* Called when a new surface state is committed. */
@@ -1653,23 +1173,6 @@ static void xdg_toplevel_request_resize(
     normalize_resize_edges(toplevel->server);
     begin_interactive(toplevel, TINYWL_CURSOR_RESIZE, toplevel->server->resize_edges);
 }
-
-// static void xdg_toplevel_request_maximize(
-// 		struct wl_listener *listener, void *data) {
-// 	/* This event is raised when a client would like to maximize itself,
-// 	 * typically because the user clicked on the maximize button on client-side
-// 	 * decorations. tinywl doesn't support maximization, but to conform to
-// 	 * xdg-shell protocol we still must send a configure.
-// 	 * wlr_xdg_surface_schedule_configure() is used to send an empty reply.
-// 	 * However, if the request was sent before an initial commit, we don't do
-// 	 * anything and let the client finish the initial surface setup. */
-// 	struct tinywl_toplevel *toplevel =
-// 		wl_container_of(listener, toplevel, request_maximize);
-// 	if (toplevel->xdg_toplevel->base->initialized) {
-// 		wlr_xdg_surface_schedule_configure(toplevel->xdg_toplevel->base);
-// 	}
-// }
-
 
 static void xdg_toplevel_request_fullscreen(
 		struct wl_listener *listener, void *data) {
