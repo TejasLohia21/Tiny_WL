@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <time.h>
 #include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 #include <wayland-server-core.h>
 #include <wlr/backend.h>
 #include <wlr/render/allocator.h>
@@ -25,19 +27,19 @@
 #include <wlr/util/log.h>
 #include <xkbcommon/xkbcommon.h>
 #include <wlr/util/box.h>
-#include <limits.h>
-#include <wayland-server.h> 
+#include <limits.h> 
+#include <wlr/types/wlr_layer_shell_v1.h>
+#include <wlr/types/wlr_xdg_output_v1.h>
+#include <wlr/types/wlr_output_layout.h>
+#include <signal.h>
 
-
-//added 2nd feb
-#include <cairo.h>
 
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 
 //adding following for time based implementation
 #define PROXIMITY_THRESHOLD 30 
-#define TIME_THRESHOLD_MS 2000
+#define TIME_THRESHOLD_MS 3000
 
 struct tinywl_group {
     struct wl_list toplevels;
@@ -52,6 +54,9 @@ enum tinywl_cursor_mode {
 };
 
 struct tinywl_server {
+	struct wlr_layer_shell_v1 *layer_shell;
+    struct wl_listener new_layer_surface;
+
 	struct wl_display *wl_display;
 	struct wlr_backend *backend;
 	struct wlr_renderer *renderer;
@@ -143,73 +148,13 @@ struct tinywl_keyboard {
 	struct wl_listener destroy;
 };
 
-//added 2nd feb
-
-struct tinywl_overlay {
-    struct wl_surface *surface;
-    cairo_t *cairo_context;
-    cairo_surface_t *cairo_surface;
-    int width, height;
-};
-
-
-
 //adding a global count holder
 int count_windows = 0;
 
 //following has been added for explicit declaratioj
 void merge_groups(struct tinywl_toplevel *toplevel, struct tinywl_toplevel *other);
+
 void remove_from_group(struct tinywl_toplevel *toplevel);
-
-void render_panel(struct wlr_output *output, struct wlr_renderer *renderer, struct tinywl_server *server);
-void render_frame(struct tinywl_server *server, struct wlr_output *output);
-
-//newly added
-void render_panel(struct wlr_output *output, struct wlr_renderer *renderer, struct tinywl_server *server) {
-    // Get output resolution
-    int width = output->width;
-    int height = 40;  // Height of the panel at the bottom
-
-    // Create a Cairo image surface
-    cairo_surface_t *surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, width, height);
-    cairo_t *cr = cairo_create(surface);
-
-    // Fill the panel with a **visible color** (bright blue)
-    cairo_set_source_rgb(cr, 0.0, 0.4, 1.0);  // **Bright Blue**
-    cairo_rectangle(cr, 0, 0, width, height);
-    cairo_fill(cr);
-
-    // Clean up Cairo
-    cairo_destroy(cr);
-    cairo_surface_destroy(surface);
-
-    // Get the scene output corresponding to the output
-    struct wlr_scene_output *scene_output = wlr_scene_get_scene_output(server->scene, output);
-
-    // Check if scene_output is valid
-    if (scene_output) {
-        // Create the options struct (use defaults)
-        struct wlr_scene_output_state_options options = {0};
-
-        // Commit the scene output
-        wlr_scene_output_commit(scene_output, &options);
-    }
-}
-
-void render_frame(struct tinywl_server *server, struct wlr_output *output) {
-    // Render the panel using Cairo
-    render_panel(output, server->renderer, server);
-
-    // Get the scene output from the server's scene
-    struct wlr_scene_output *scene_output = wlr_scene_get_scene_output(server->scene, output);
-
-    // Commit the output scene if valid
-    if (scene_output) {
-        struct wlr_scene_output_state_options options = {0};  // Initialize the options structure
-        wlr_scene_output_commit(scene_output, &options);
-    }
-}
-
 //25th jan editred
 static void create_group(struct tinywl_toplevel *a, struct tinywl_toplevel *b) {
     struct tinywl_group *group = calloc(1, sizeof(*group));
@@ -255,63 +200,6 @@ void merge_groups(struct tinywl_toplevel *toplevel, struct tinywl_toplevel *othe
     wlr_log(WLR_DEBUG, "Merged two window groups successfully.");
 }
 
-//30th jan edited
-
-void remove_from_group(struct tinywl_toplevel *toplevel) {
-    if (toplevel->group) {
-        // Remove the window from its group's list of toplevels
-        wl_list_remove(&toplevel->group_link);
-
-        // If the group becomes empty after removing this window, free the group
-        if (wl_list_empty(&toplevel->group->toplevels)) {
-            free(toplevel->group);
-        }
-
-        // Set the group's reference to NULL, since the window is no longer part of any group
-        toplevel->group = NULL;
-        wlr_log(WLR_DEBUG, "Window removed from group: %p", toplevel);
-    } else {
-        wlr_log(WLR_DEBUG, "Window is not part of any group: %p", toplevel);
-    }
-}
-
-//under dev
-
-// void remove_from_group(struct tinywl_toplevel *toplevel) {
-//     if (toplevel->group) {
-//         // Remove the window from its group's list of toplevels
-//         wl_list_remove(&toplevel->group_link);
-
-//         // If the group becomes empty after removing this window, free the group
-//         if (wl_list_empty(&toplevel->group->toplevels)) {
-//             free(toplevel->group);
-//         }
-
-//         // Set the group's reference to NULL, since the window is no longer part of any group
-//         toplevel->group = NULL;
-
-//         // Ensure the scene updates properly by repositioning
-//         int new_x = toplevel->scene_tree->node.x - 35; // Move 35 pixels to the right
-//         int new_y = toplevel->scene_tree->node.y;      // Keep the same Y position
-
-//         // Apply the new position to move the window
-//         wlr_scene_node_set_position(&toplevel->scene_tree->node, new_x, new_y);
-
-//         // Force an immediate refresh of the scene to prevent duplication issues
-//         struct tinywl_server *server = toplevel->server;
-//         struct tinywl_output *output;
-//         wl_list_for_each(output, &server->outputs, link) {
-//             wlr_scene_output_commit(output->scene_output, NULL);
-//             struct timespec now;
-//             clock_gettime(CLOCK_MONOTONIC, &now);
-//             wlr_scene_output_send_frame_done(output->scene_output, &now);
-//         }
-
-//         wlr_log(WLR_DEBUG, "Window removed from group and moved by 35 pixels: %p", toplevel);
-//     } else {
-//         wlr_log(WLR_DEBUG, "Window is not part of any group: %p", toplevel);
-//     }
-// }
 
 
 static bool check_proximity(struct tinywl_toplevel *toplevel) {
@@ -364,10 +252,13 @@ static bool check_proximity(struct tinywl_toplevel *toplevel) {
                 toplevel->proximity_timestamp = current_time;
             }
 
+			// time_t current_time = clock();
 			long elapsed_time = (current_time - toplevel->proximity_timestamp) * 1000 / CLOCKS_PER_SEC;
 
+			// if (horizontal_proximity && vertical_proximity && elapsed_time >= 10000) {
+
             // Check if the time threshold has elapsed
-            if (horizontal_proximity && vertical_proximity && elapsed_time >= TIME_THRESHOLD_MS) {
+            if (horizontal_proximity && vertical_proximity && elapsed_time >= 1500) {
 				if (!toplevel->group && !other->group) {
 					create_group(toplevel, other);  // Create a new group if both have no group
 					wlr_log(WLR_DEBUG, "Created new group with windows");
@@ -391,18 +282,6 @@ static bool check_proximity(struct tinywl_toplevel *toplevel) {
 
     return false;
 }
-
-//under dev: 2nd feb
-// static void create_overlay(struct tinywl_overlay *overlay, int width, int height) {
-//     overlay->width = width;
-//     overlay->height = height;
-//     overlay->surface = wl_compositor_create_surface(server.compositor);
-//     overlay->cairo_surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, width, height);
-//     overlay->cairo_context = cairo_create(overlay->cairo_surface);
-// }
-
-
-
 
 
 // the following function is correctly maximising the window
@@ -547,76 +426,83 @@ static void keyboard_handle_modifiers(
 // 	return true;
 // }
 
-// static bool handle_keybinding(struct tinywl_server *server, xkb_keysym_t sym) {
-//     struct wlr_keyboard *keyboard = wlr_seat_get_keyboard(server->seat);  
-//     if (!keyboard) {
-//         return false;
-//     }
 
-//     // uint32_t modifiers = wlr_keyboard_get_modifiers(keyboard);
-//     // bool is_command_pressed = modifiers & WLR_MODIFIER_LOGO;  // Command key (⌘)
-//     // bool is_shift_pressed = modifiers & WLR_MODIFIER_SHIFT;   // Shift key
-
-//     switch (sym) {
-//         case XKB_KEY_Escape:
-//             wl_display_terminate(server->wl_display);
-//             break;
-//         case XKB_KEY_F1:
-//             /* Cycle to the next toplevel */
-//             if (wl_list_length(&server->toplevels) < 2) {
-//                 break;
-//             }
-//             struct tinywl_toplevel *next_toplevel =
-//                 wl_container_of(server->toplevels.prev, next_toplevel, link);
-//             focus_toplevel(next_toplevel);
-//             break;
-//         case XKB_KEY_BackSpace:  // F11 to desnap windows
-//             struct tinywl_toplevel *toplevel;
-//             wl_list_for_each(toplevel, &server->toplevels, link) {
-//                 if (toplevel->group) {
-//                     // Remove the window from its group (desnapping)
-//                     remove_from_group(toplevel);
-//                     wlr_log(WLR_DEBUG, "Desnapped window: %p", toplevel);
-//                 }
-//             }
-//             return true;  // Handled the keybinding
-//         default:
-//             return false;  // No action for other keys
+// static void spawn_rofi(void) {
+//     if (fork() == 0) {
+//         execlp("rofi", "rofi", "-show", "drun", NULL);
+//         _exit(127); // Exit if exec fails
 //     }
-//     return true;
+// }
+static void spawn_rofi(void) {
+    if (fork() == 0) {
+        setsid();  // Start a new session to detach from tinywl
+        execlp("rofi", "rofi", "-show", "drun", NULL);
+        _exit(127);
+    }
+}
+
+// static void spawn_app(const char *app) {
+//     if (fork() == 0) {
+//         setsid();
+//         execlp(app, app, NULL);
+//         _exit(127);
+//     }
 // }
 
-static bool handle_keybinding(struct tinywl_server *server, xkb_keysym_t sym) {
-    struct wlr_keyboard *keyboard = wlr_seat_get_keyboard(server->seat);  
-    if (!keyboard) {
-        return false;
-    }
+void remove_from_group(struct tinywl_toplevel *toplevel) {
+    if (toplevel->group) {
+        // Remove the window from its group's list of toplevels
+        wl_list_remove(&toplevel->group_link);
 
+        // If the group becomes empty after removing this window, free the group
+        if (wl_list_empty(&toplevel->group->toplevels)) {
+            free(toplevel->group);
+        }
+
+        // Set the group's reference to NULL, since the window is no longer part of any group
+        toplevel->group = NULL;
+        wlr_log(WLR_DEBUG, "Window removed from group: %p", toplevel);
+    } else {
+        wlr_log(WLR_DEBUG, "Window is not part of any group: %p", toplevel);
+    }
+}
+
+static bool handle_keybinding(struct tinywl_server *server, xkb_keysym_t sym) {
+    /*
+     * Here we handle compositor keybindings. This is when the compositor is
+     * processing keys, rather than passing them on to the client for its own
+     * processing.
+     *
+     * This function assumes Alt is held down.
+     */
     switch (sym) {
-        case XKB_KEY_Escape:
-            wl_display_terminate(server->wl_display);
+    case XKB_KEY_Escape:
+        wl_display_terminate(server->wl_display);
+        break;
+    case XKB_KEY_F1:
+        /* Cycle to the next toplevel */
+        if (wl_list_length(&server->toplevels) < 2) {
             break;
-        case XKB_KEY_F1:
-            /* Cycle to the next toplevel */
-            if (wl_list_length(&server->toplevels) < 2) {
-                break;
-            }
-            struct tinywl_toplevel *next_toplevel =
-                wl_container_of(server->toplevels.prev, next_toplevel, link);
-            focus_toplevel(next_toplevel);
-            break;
-        case XKB_KEY_BackSpace:  // Backspace to desnap windows
-            struct tinywl_toplevel *toplevel;
-            wl_list_for_each(toplevel, &server->toplevels, link) {
-                if (toplevel->group) {
-                    // Remove the window from its group (desnapping)
-                    remove_from_group(toplevel);
-                    wlr_log(WLR_DEBUG, "Desnapped window: %p", toplevel);
-                }
-            }
-            return true;  // Handled the keybinding
-        default:
-            return false;  // No action for other keys
+        }
+        struct tinywl_toplevel *next_toplevel =
+            wl_container_of(server->toplevels.prev, next_toplevel, link);
+        focus_toplevel(next_toplevel);
+        break;
+	case XKB_KEY_BackSpace:  // Backspace to desnap windows
+        struct tinywl_toplevel *toplevel;
+        wl_list_for_each(toplevel, &server->toplevels, link) {
+        	if (toplevel->group) {
+            	// Remove the window from its group (desnapping)
+            	remove_from_group(toplevel);
+            	wlr_log(WLR_DEBUG, "Desnapped window: %p", toplevel);
+        	}
+        }
+		break;
+    case XKB_KEY_r: // Pressing "r" while holding Alt will launch rofi
+        spawn_rofi();
+        break;
+    default:
+        return false;
     }
     return true;
 }
@@ -1054,8 +940,6 @@ static void output_frame(struct wl_listener *listener, void *data) {
 	struct wlr_scene_output *scene_output = wlr_scene_get_scene_output(
 		scene, output->wlr_output);
 
-	render_frame(server, output->wlr_output);
-
 	/* Render the scene if needed and commit the output */
 	wlr_scene_output_commit(scene_output, NULL);
 
@@ -1285,7 +1169,7 @@ static void xdg_toplevel_destroy(struct wl_listener *listener, void *data) {
         }
 	}
 	free(toplevel);
-}
+	}
 
 
 static void begin_interactive(struct tinywl_toplevel *toplevel,
@@ -1480,14 +1364,91 @@ static void server_new_xdg_popup(struct wl_listener *listener, void *data) {
 	wl_signal_add(&xdg_popup->events.destroy, &popup->destroy);
 }
 
+// Define handle_layer_surface_destroy()
+static void handle_layer_surface_destroy(struct wl_listener *listener, void *data) {
+    struct wlr_layer_surface_v1 *layer_surface = data;
 
+    struct wl_listener *destroy_listener = wl_container_of(listener, destroy_listener, link);
+    free(destroy_listener);
+
+    struct wl_listener *commit_listener = wl_container_of(listener, commit_listener, link);
+    free(commit_listener);
+
+    struct wlr_scene_tree *scene_tree = layer_surface->surface->data;
+    wlr_scene_node_destroy(&scene_tree->node);
+}
+
+// Define handle_layer_surface_commit()
+static void handle_layer_surface_commit(struct wl_listener *listener, void *data) {
+    struct wlr_surface *surface = data;
+
+    // Use wlr_layer_surface_v1_from_wlr_surface() instead of wl_container_of()
+    struct wlr_layer_surface_v1 *layer_surface = wlr_layer_surface_v1_try_from_wlr_surface(surface);
+
+    
+    if (!layer_surface) {
+        return;
+    }
+
+    // Get the actual rendered size from the surface buffer
+    int buffer_width = surface->current.width;
+    int buffer_height = surface->current.height;
+
+    if (!layer_surface->configured) {
+        wlr_layer_surface_v1_configure(layer_surface, buffer_width, buffer_height);
+    }
+}
+
+
+
+// Define handle_new_layer_surface()
+static void handle_new_layer_surface(struct wl_listener *listener, void *data) {
+    struct tinywl_server *server = wl_container_of(listener, server, new_layer_surface);
+    struct wlr_layer_surface_v1 *layer_surface = data;
+
+    // Create the scene layer surface
+    struct wlr_scene_layer_surface_v1 *scene_layer_surface =
+        wlr_scene_layer_surface_v1_create(&server->scene->tree, layer_surface);
+    if (!scene_layer_surface) {
+        wlr_log(WLR_ERROR, "Failed to create scene node for layer surface");
+        return;
+    }
+
+    // Get the actual rendered buffer size
+    int buffer_width, buffer_height;
+    struct wlr_fbox box;
+    wlr_surface_get_buffer_source_box(layer_surface->surface, &box);
+    buffer_width = box.width;
+    buffer_height = box.height;
+
+    // Use the actual buffer size when configuring the layer surface
+    wlr_layer_surface_v1_configure(layer_surface, buffer_width, buffer_height);
+
+    // Store listeners for proper cleanup
+    struct wl_listener *destroy_listener = calloc(1, sizeof(struct wl_listener));
+    if (!destroy_listener) {
+        wlr_log(WLR_ERROR, "Failed to allocate memory for destroy listener");
+        return;
+    }
+    destroy_listener->notify = handle_layer_surface_destroy;
+    wl_signal_add(&layer_surface->events.destroy, destroy_listener);
+
+    struct wl_listener *commit_listener = calloc(1, sizeof(struct wl_listener));
+    if (!commit_listener) {
+        wlr_log(WLR_ERROR, "Failed to allocate memory for commit listener");
+        free(destroy_listener);
+        return;
+    }
+    commit_listener->notify = handle_layer_surface_commit;
+    wl_signal_add(&layer_surface->surface->events.commit, commit_listener);
+
+    layer_surface->data = commit_listener;
+}
 
 int main(int argc, char *argv[]) {
-	// test_cairo();
 	wlr_log_init(WLR_DEBUG, NULL);
 	char *startup_cmds[argc]; // Array to hold multiple startup commands
     int startup_cmd_count = 0;
-	
 
     int c;
     while ((c = getopt(argc, argv, "s:h")) != -1) {
@@ -1506,6 +1467,7 @@ int main(int argc, char *argv[]) {
         printf("Usage: %s [-s startup command]\n", argv[0]);
         return 0;
     }
+	
 
 	struct tinywl_server server = {0};
 	/* The Wayland display is managed by libwayland. It handles accepting
@@ -1533,6 +1495,8 @@ int main(int argc, char *argv[]) {
 
 	wlr_renderer_init_wl_display(server.renderer, server.wl_display);
 
+
+
 	/* Autocreates an allocator for us.
 	 * The allocator is the bridge between the renderer and the backend. It
 	 * handles the buffer creation, allowing wlroots to render onto the
@@ -1555,6 +1519,7 @@ int main(int argc, char *argv[]) {
 	wlr_subcompositor_create(server.wl_display);
 	wlr_data_device_manager_create(server.wl_display);
 
+
 	/* Creates an output layout, which a wlroots utility for working with an
 	 * arrangement of screens in a physical layout. */
 	server.output_layout = wlr_output_layout_create(server.wl_display);
@@ -1572,7 +1537,6 @@ int main(int argc, char *argv[]) {
 	 * necessary.
 	 */
 	server.scene = wlr_scene_create();
-	
 	server.scene_layout = wlr_scene_attach_output_layout(server.scene, server.output_layout);
 
 	/* Set up xdg-shell version 3. The xdg-shell is a Wayland protocol which is
@@ -1585,6 +1549,10 @@ int main(int argc, char *argv[]) {
 	wl_signal_add(&server.xdg_shell->events.new_toplevel, &server.new_xdg_toplevel);
 	server.new_xdg_popup.notify = server_new_xdg_popup;
 	wl_signal_add(&server.xdg_shell->events.new_popup, &server.new_xdg_popup);
+
+	server.layer_shell = wlr_layer_shell_v1_create(server.wl_display, 4);
+	server.new_layer_surface.notify = handle_new_layer_surface;
+	wl_signal_add(&server.layer_shell->events.new_surface, &server.new_layer_surface);
 
 	/*
 	 * Creates a cursor, which is a wlroots utility for tracking the cursor
@@ -1693,4 +1661,3 @@ int main(int argc, char *argv[]) {
 	wl_display_destroy(server.wl_display);
 	return 0;
 }
-
