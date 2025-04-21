@@ -11,8 +11,9 @@
 - Implemented an advanced snapping feature with pixel proximity checks and timing adjustments when windows come into proximity.
 - Enabled windows to open inside the TinyWL compositor without requiring explicit commands for those applications.
 - Integration of **Rofi** within the TinyWL compositor by implementation of **layer_shell_protocol** from scratch.
+-  Integration of two other protocols - foreign_toplevel_management protocol and DMA_BUF protocol.
+
 
 ### Next Tasks
 - Fix an issue in the snapping function where windows occasionally overlap by a few pixels.
 - Enhance the visual display of all apps within the TinyWL compositor, enabling better interaction and navigation when opening windows.
-- Integration of two other protocols - foreign_toplevel_management protocol and DMA_BUF protocol.
