@@ -41,7 +41,7 @@ make
 sudo chvt 3
 ```
 
-- Again navigate to the place where wlroots/tinywl exists and run ``` ./tinywl ```
+- Again navigate to the wlroots/tinywl directory and run ``` ./tinywl ```
 
 This will start the tinywl environment.
 
