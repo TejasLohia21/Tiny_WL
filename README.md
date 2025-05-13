@@ -1,4 +1,4 @@
-- Documentation under progress
+- Documentation and website under progress
 
 # Building an Advanced TinyWL System
 
