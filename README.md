@@ -2,7 +2,11 @@
 
 # The FusionEdge
 
-result_images ![Img1](result_images/WhatsApp Image 2025-05-14 at 11.04.51 (1).jpeg)
+![Img1](result_images/WhatsApp Image 2025-05-14 at 11.04.51 (1).jpeg)
+![Fuzzel](result_images/WhatsApp Image 2025-05-14 at 11.04.51 (2).jpeg)
+![Stacking](result_images/WhatsApp Image 2025-05-14 at 11.04.51 (3).jpeg)
+![Tiling](result_images/WhatsApp Image 2025-05-14 at 11.04.51 (4).jpeg)
+
 
 # Building an Advanced TinyWL System
 
