@@ -1,5 +1,9 @@
 - Documentation and website under progress
 
+# The FusionEdge
+
+result_images ![Img1](result_images/WhatsApp Image 2025-05-14 at 11.04.51 (1).jpeg)
+
 # Building an Advanced TinyWL System
 
 ### What we have done
